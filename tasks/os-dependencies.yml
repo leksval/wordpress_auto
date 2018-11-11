@@ -1,0 +1,26 @@
+---
+    - name: "Let's create some Hello World"
+      file:
+            path: ~/helloWorld
+            state: touch
+    - name: "Install apache server"
+      yum:
+            name: httpd
+            state: latest
+    - name: "install msql"
+      yum:
+        name: "{{packages}}"
+        state: present
+      vars:
+        packages:
+            - mariadb
+            - mariadb-server
+    - name: "install php"
+      yum:
+        name: "{{packages}}"
+        state: latest
+      vars:
+        packages:
+            - php
+            - php-mysql
+            - MySQL-python

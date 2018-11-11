@@ -1,0 +1,37 @@
+---
+    - name: "Download wordpress"
+      get_url:
+        url: https://wordpress.org/latest.zip
+        dest: /tmp/wordpress.zip
+    - name: "Unarchive wordpress"
+      unarchive:
+        src: /tmp/wordpress.zip
+        dest: /var/www
+        remote_src: yes
+    - name: "Start service mariadb, if not started"
+      service:
+        name: mariadb
+        state: started
+    - name: "Create a new database with name "
+      mysql_db:
+        name: "{{name_of_project}}"
+        state: present
+    - name: "Create user with name user_name_of_project"
+      mysql_user:
+        name: "{{name_of_project}}"
+        password: 54321
+        priv: '*.*:ALL,GRANT'
+        state: present
+    - name: "copy apache cfg"
+      template:
+        src: templates/blog.conf
+        dest: /etc/httpd/conf.d/blog.conf
+
+    - name: "Start service httpd, if not started"
+      service:
+        name: httpd
+        state: restarted
+    - name: "copy wp-cofnig.php"
+      copy:
+        src: templates/wp-config.php
+        dest: "{{wordpress_path}}/wp-config.php"
